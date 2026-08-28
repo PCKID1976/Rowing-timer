@@ -6,37 +6,222 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Rowing Timer</title>
 <style>
-body{margin:0;background:#11151b;color:#fff;font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif}
-.wrap{max-width:700px;margin:0 auto;padding:16px}
-h1{font-size:24px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.tab{flex:1;min-width:100px;padding:14px 8px;border:0;border-radius:12px;background:#2a313b;color:#fff;font-weight:bold;font-size:15px}
-.tab.active{background:#2878e8}
-.panel{display:none;background:#1c222b;border-radius:18px;padding:16px}
+:root{
+  --bg:#0b1020;
+  --panel:#121a2b;
+  --panel2:#182238;
+  --text:#f7f9fc;
+  --muted:#9ba8bd;
+  --blue:#3b82f6;
+  --green:#22c55e;
+  --red:#ef4444;
+  --orange:#f59e0b;
+  --border:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(34,197,94,.08), transparent 24%),
+    var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Arial,sans-serif;
+  min-height:100vh;
+}
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px 32px}
+.app-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:4px 2px 18px;
+}
+.app-logo{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#2563eb,#60a5fa);
+  font-size:26px;
+  box-shadow:0 10px 30px rgba(37,99,235,.25);
+}
+h1{font-size:26px;line-height:1;margin:0}
+.subtitle{color:var(--muted);font-size:13px;margin-top:5px}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+  margin-bottom:14px
+}
+.tab{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:13px 10px;
+  min-height:56px;
+  background:rgba(255,255,255,.045);
+  color:var(--text);
+  font-weight:800;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  backdrop-filter:blur(12px);
+}
+.tab.active{
+  background:linear-gradient(145deg,#2563eb,#3b82f6);
+  border-color:transparent;
+  box-shadow:0 8px 22px rgba(37,99,235,.22);
+}
+.tab-icon{font-size:19px}
+
+.panel{
+  display:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.20);
+  backdrop-filter:blur(14px);
+}
 .panel.active{display:block}
-.display{text-align:center;font-size:48px;font-weight:bold;margin:22px 0 8px;font-variant-numeric:tabular-nums}
-.sub{text-align:center;font-size:22px;margin-bottom:18px}
-.grid{display:flex;gap:10px}
-.btn{flex:1;border:0;border-radius:16px;min-height:82px;color:#fff;font-size:20px;font-weight:bold}
-.green{background:#20a35a}.red{background:#d84949}.blue{background:#2878e8}.gray{background:#3b4350}.orange{background:#d88924}
-.help{text-align:center;color:#aeb7c4;font-size:13px;line-height:1.4;margin-top:14px}
-.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #343b46;padding:12px 2px;font-size:18px}
-.small{font-size:13px;color:#aeb7c4}
+
+.hero{
+  text-align:center;
+  padding:8px 0 16px;
+}
+.hero-icon{
+  width:62px;height:62px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--panel2);
+  margin:0 auto 12px;
+  font-size:31px;
+  border:1px solid var(--border);
+}
+.display{
+  text-align:center;
+  font-size:50px;
+  font-weight:900;
+  letter-spacing:-2px;
+  margin:10px 0 4px;
+  font-variant-numeric:tabular-nums
+}
+.sub{
+  text-align:center;
+  font-size:18px;
+  color:var(--muted);
+  margin-bottom:18px;
+  font-variant-numeric:tabular-nums
+}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+  border:0;
+  border-radius:18px;
+  min-height:76px;
+  color:#fff;
+  font-size:19px;
+  font-weight:900;
+  letter-spacing:.2px;
+  touch-action:manipulation;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+.green{background:linear-gradient(145deg,#16a34a,#22c55e)}
+.red{background:linear-gradient(145deg,#dc2626,#ef4444)}
+.blue{background:linear-gradient(145deg,#2563eb,#3b82f6)}
+.gray{background:linear-gradient(145deg,#313b4f,#465268)}
+.orange{background:linear-gradient(145deg,#d97706,#f59e0b)}
+
+.help{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  margin-top:14px;
+}
+.row{
+  display:grid;
+  grid-template-columns:48px 1fr auto;
+  gap:10px;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  padding:13px 4px;
+  font-size:18px
+}
+.small{font-size:12px;color:var(--muted)}
+
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:12px 0 15px
+}
+.stat{
+  background:rgba(255,255,255,.045);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  text-align:center
+}
+.stat-icon{font-size:22px;margin-bottom:5px}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.stat-value{
+  font-size:26px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums
+}
+.status{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.4;
+  margin-top:12px;
+  min-height:36px
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:999px;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:4px;
+}
+@media(max-width:430px){
+  .wrap{padding:14px 10px 26px}
+  h1{font-size:23px}
+  .display{font-size:43px}
+  .btn{font-size:17px;min-height:72px}
+  .tab{font-size:13px}
+  .stat-value{font-size:22px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>🚣 Rowing Timer</h1>
+<div class="app-title">
+  <div class="app-logo">🚣</div>
+  <div>
+    <h1>Rowing Timer</h1>
+    <div class="subtitle">Strumenti rapidi per allenamento e gara</div>
+  </div>
+</div>
 
 <div class="tabs">
-<button class="tab active" onclick="showPanel('spm',this)">Colpi/min</button>
-<button class="tab" onclick="showPanel('chrono',this)">Cronometro</button>
-<button class="tab" onclick="showPanel('multi',this)">Multitempo</button>
+<button class="tab active" onclick="showPanel('spm',this)"><span class="tab-icon">⚡</span>Colpi/min</button>
+<button class="tab" onclick="showPanel('chrono',this)"><span class="tab-icon">⏱️</span>Cronometro</button>
+<button class="tab" onclick="showPanel('multi',this)"><span class="tab-icon">🏁</span>Multitempo</button>
+<button class="tab" onclick="showPanel('gps',this)"><span class="tab-icon">📍</span>Metri & Velocità</button>
 </div>
 
 <div id="spm" class="panel active">
-<div class="display" id="spmResult">-- SPM</div>
-<div class="sub" id="spmTime">00:00.00</div>
+<div class="hero">
+  <div class="hero-icon">⚡</div>
+  <div class="badge">10 palate</div>
+  <div class="display" id="spmResult">-- SPM</div>
+  <div class="sub" id="spmTime">00:00.00</div>
+</div>
 <div class="grid">
 <button id="spmBtn" class="btn green" onclick="toggleSPM()">START</button>
 <button class="btn gray" onclick="resetSPM()">RESET</button>
@@ -45,7 +230,11 @@ h1{font-size:24px}
 </div>
 
 <div id="chrono" class="panel">
-<div class="display" id="chronoTime">00:00.00</div>
+<div class="hero">
+  <div class="hero-icon">⏱️</div>
+  <div class="display" id="chronoTime">00:00.00</div>
+  <div class="sub">Cronometro singolo</div>
+</div>
 <div class="grid">
 <button id="chronoBtn" class="btn green" onclick="toggleChrono()">START</button>
 <button class="btn gray" onclick="resetChrono()">RESET</button>
@@ -53,7 +242,11 @@ h1{font-size:24px}
 </div>
 
 <div id="multi" class="panel">
-<div class="display" id="multiTime">00:00.00</div>
+<div class="hero">
+  <div class="hero-icon">🏁</div>
+  <div class="display" id="multiTime">00:00.00</div>
+  <div class="sub">Registra più arrivi senza fermare il tempo</div>
+</div>
 <div class="grid">
 <button id="multiBtn" class="btn green" onclick="toggleMulti()">START</button>
 <button id="arrivoBtn" class="btn blue" onclick="addArrival()" disabled>ARRIVO</button>
@@ -63,6 +256,44 @@ h1{font-size:24px}
 <button class="btn red" onclick="resetMulti()">RESET</button>
 </div>
 <div id="arrivalList" style="margin-top:18px"></div>
+</div>
+
+<div id="gps" class="panel">
+<div class="hero">
+  <div class="hero-icon">📍</div>
+  <div class="display" id="gpsSpeed">0.0 km/h</div>
+  <div class="sub">Velocità attuale</div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-icon">📏</div>
+    <div class="stat-label">Distanza</div>
+    <div class="stat-value" id="gpsDistance">0 m</div>
+  </div>
+  <div class="stat">
+    <div class="stat-icon">🚀</div>
+    <div class="stat-label">Velocità media</div>
+    <div class="stat-value" id="gpsAverage">0.0 km/h</div>
+  </div>
+  <div class="stat">
+    <div class="stat-icon">⏱️</div>
+    <div class="stat-label">Tempo</div>
+    <div class="stat-value" id="gpsTime">00:00</div>
+  </div>
+  <div class="stat">
+    <div class="stat-icon">🛰️</div>
+    <div class="stat-label">Precisione GPS</div>
+    <div class="stat-value" id="gpsAccuracy">-- m</div>
+  </div>
+</div>
+
+<div class="grid">
+<button id="gpsBtn" class="btn green" onclick="toggleGPS()">START GPS</button>
+<button class="btn gray" onclick="resetGPS()">RESET</button>
+</div>
+
+<div id="gpsStatus" class="help">Premi START GPS e consenti a Safari di usare la posizione.</div>
 </div>
 
 </div>
@@ -183,6 +414,120 @@ function resetMulti(){
   document.getElementById('arrivoBtn').disabled=true;
   drawArrivals();
 }
+// GPS
+var gpsRunning=false,gpsWatchId=null,gpsStart=0,gpsStored=0,gpsTimer=null;
+var gpsDistance=0,gpsLastLat=null,gpsLastLon=null,gpsLastTime=null,gpsSpeed=0;
+
+function gpsElapsed(){return gpsStored+(gpsRunning?(nowMs()-gpsStart):0);}
+
+function fmtGps(ms){
+  var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;
+  return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+}
+
+function haversine(lat1,lon1,lat2,lon2){
+  var R=6371000,rad=Math.PI/180;
+  var p1=lat1*rad,p2=lat2*rad;
+  var dp=(lat2-lat1)*rad,dl=(lon2-lon1)*rad;
+  var a=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function updateGPS(){
+  var e=gpsElapsed();
+  document.getElementById('gpsTime').innerHTML=fmtGps(e);
+  var avg=e>0 ? (gpsDistance/1000)/(e/3600000) : 0;
+  document.getElementById('gpsAverage').innerHTML=avg.toFixed(1)+' km/h';
+  document.getElementById('gpsDistance').innerHTML=gpsDistance<1000?Math.round(gpsDistance)+' m':(gpsDistance/1000).toFixed(2)+' km';
+}
+
+function gpsSuccess(pos){
+  if(!gpsRunning)return;
+  var lat=pos.coords.latitude,lon=pos.coords.longitude,acc=pos.coords.accuracy;
+  var t=pos.timestamp||nowMs();
+
+  document.getElementById('gpsAccuracy').innerHTML=Math.round(acc)+' m';
+
+  if(typeof pos.coords.speed==='number' && pos.coords.speed>=0){
+    gpsSpeed=pos.coords.speed*3.6;
+  }
+
+  if(gpsLastLat!==null){
+    var d=haversine(gpsLastLat,gpsLastLon,lat,lon);
+    var dt=(t-gpsLastTime)/1000;
+
+    if(dt>0 && d>=1 && d<80){
+      if(acc<=35 || d>=5) gpsDistance+=d;
+      if(!(typeof pos.coords.speed==='number' && pos.coords.speed>=0)){
+        gpsSpeed=(d/dt)*3.6;
+      }
+    }
+  }
+
+  gpsLastLat=lat;gpsLastLon=lon;gpsLastTime=t;
+  if(gpsSpeed<0.5)gpsSpeed=0;
+
+  document.getElementById('gpsSpeed').innerHTML=gpsSpeed.toFixed(1)+' km/h';
+  document.getElementById('gpsStatus').innerHTML='GPS attivo • posizione ricevuta';
+  updateGPS();
+}
+
+function gpsError(err){
+  var msg='Errore GPS.';
+  if(err.code===1)msg='Permesso posizione negato. Consenti la posizione nelle impostazioni di Safari.';
+  if(err.code===2)msg='Posizione non disponibile. Prova all’aperto.';
+  if(err.code===3)msg='Ricerca GPS lenta. Attendi qualche secondo.';
+  document.getElementById('gpsStatus').innerHTML=msg;
+}
+
+function toggleGPS(){
+  var btn=document.getElementById('gpsBtn');
+
+  if(!navigator.geolocation){
+    document.getElementById('gpsStatus').innerHTML='GPS non supportato dal browser.';
+    return;
+  }
+
+  if(!gpsRunning){
+    gpsRunning=true;
+    gpsStart=nowMs();
+    gpsLastLat=null;gpsLastLon=null;gpsLastTime=null;
+    btn.innerHTML='STOP';btn.className='btn red';
+    document.getElementById('gpsStatus').innerHTML='Ricerca GPS...';
+
+    gpsWatchId=navigator.geolocation.watchPosition(
+      gpsSuccess,
+      gpsError,
+      {enableHighAccuracy:true,maximumAge:0,timeout:15000}
+    );
+    gpsTimer=setInterval(updateGPS,500);
+  }else{
+    gpsStored+=nowMs()-gpsStart;
+    gpsRunning=false;
+    if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
+    clearInterval(gpsTimer);
+    document.getElementById('gpsSpeed').innerHTML='0.0 km/h';
+    document.getElementById('gpsStatus').innerHTML='GPS fermato.';
+    btn.innerHTML='RIPRENDI';btn.className='btn green';
+    updateGPS();
+  }
+}
+
+function resetGPS(){
+  gpsRunning=false;
+  if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
+  clearInterval(gpsTimer);
+  gpsStart=0;gpsStored=0;gpsDistance=0;gpsLastLat=null;gpsLastLon=null;gpsLastTime=null;gpsSpeed=0;
+  document.getElementById('gpsSpeed').innerHTML='0.0 km/h';
+  document.getElementById('gpsDistance').innerHTML='0 m';
+  document.getElementById('gpsAverage').innerHTML='0.0 km/h';
+  document.getElementById('gpsTime').innerHTML='00:00';
+  document.getElementById('gpsAccuracy').innerHTML='-- m';
+  document.getElementById('gpsStatus').innerHTML='Premi START GPS e consenti a Safari di usare la posizione.';
+  document.getElementById('gpsBtn').innerHTML='START GPS';
+  document.getElementById('gpsBtn').className='btn green';
+}
+
 </script>
 </body>
 </html>
