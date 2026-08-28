@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Rowing Timer</title>
+<style>
+body{margin:0;background:#11151b;color:#fff;font-family:Arial,-apple-system,BlinkMacSystemFont,sans-serif}
+.wrap{max-width:700px;margin:0 auto;padding:16px}
+h1{font-size:24px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{flex:1;min-width:100px;padding:14px 8px;border:0;border-radius:12px;background:#2a313b;color:#fff;font-weight:bold;font-size:15px}
+.tab.active{background:#2878e8}
+.panel{display:none;background:#1c222b;border-radius:18px;padding:16px}
+.panel.active{display:block}
+.display{text-align:center;font-size:48px;font-weight:bold;margin:22px 0 8px;font-variant-numeric:tabular-nums}
+.sub{text-align:center;font-size:22px;margin-bottom:18px}
+.grid{display:flex;gap:10px}
+.btn{flex:1;border:0;border-radius:16px;min-height:82px;color:#fff;font-size:20px;font-weight:bold}
+.green{background:#20a35a}.red{background:#d84949}.blue{background:#2878e8}.gray{background:#3b4350}.orange{background:#d88924}
+.help{text-align:center;color:#aeb7c4;font-size:13px;line-height:1.4;margin-top:14px}
+.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #343b46;padding:12px 2px;font-size:18px}
+.small{font-size:13px;color:#aeb7c4}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🚣 Rowing Timer</h1>
+
+<div class="tabs">
+<button class="tab active" onclick="showPanel('spm',this)">Colpi/min</button>
+<button class="tab" onclick="showPanel('chrono',this)">Cronometro</button>
+<button class="tab" onclick="showPanel('multi',this)">Multitempo</button>
+</div>
+
+<div id="spm" class="panel active">
+<div class="display" id="spmResult">-- SPM</div>
+<div class="sub" id="spmTime">00:00.00</div>
+<div class="grid">
+<button id="spmBtn" class="btn green" onclick="toggleSPM()">START</button>
+<button class="btn gray" onclick="resetSPM()">RESET</button>
+</div>
+<div class="help">Premi START, conta tu 10 palate e premi STOP subito dopo la decima.</div>
+</div>
+
+<div id="chrono" class="panel">
+<div class="display" id="chronoTime">00:00.00</div>
+<div class="grid">
+<button id="chronoBtn" class="btn green" onclick="toggleChrono()">START</button>
+<button class="btn gray" onclick="resetChrono()">RESET</button>
+</div>
+</div>
+
+<div id="multi" class="panel">
+<div class="display" id="multiTime">00:00.00</div>
+<div class="grid">
+<button id="multiBtn" class="btn green" onclick="toggleMulti()">START</button>
+<button id="arrivoBtn" class="btn blue" onclick="addArrival()" disabled>ARRIVO</button>
+</div>
+<div class="grid" style="margin-top:10px">
+<button class="btn orange" onclick="undoArrival()">ANNULLA</button>
+<button class="btn red" onclick="resetMulti()">RESET</button>
+</div>
+<div id="arrivalList" style="margin-top:18px"></div>
+</div>
+
+</div>
+
+<script>
+function showPanel(id,btn){
+  var panels=document.getElementsByClassName('panel');
+  var tabs=document.getElementsByClassName('tab');
+  var i;
+  for(i=0;i<panels.length;i++) panels[i].className='panel';
+  for(i=0;i<tabs.length;i++) tabs[i].className='tab';
+  document.getElementById(id).className='panel active';
+  btn.className='tab active';
+}
+function nowMs(){ return new Date().getTime(); }
+function fmt(ms){
+  if(ms<0) ms=0;
+  var cs=Math.floor(ms/10);
+  var hundredths=cs%100;
+  var totalSec=Math.floor(cs/100);
+  var sec=totalSec%60;
+  var min=Math.floor(totalSec/60);
+  return (min<10?'0':'')+min+':'+(sec<10?'0':'')+sec+'.'+(hundredths<10?'0':'')+hundredths;
+}
+
+// SPM
+var spmRunning=false, spmStart=0, spmTimer=null;
+function toggleSPM(){
+  var btn=document.getElementById('spmBtn');
+  if(!spmRunning){
+    spmRunning=true;
+    spmStart=nowMs();
+    document.getElementById('spmResult').innerHTML='-- SPM';
+    btn.innerHTML='STOP';
+    btn.className='btn red';
+    spmTimer=setInterval(function(){
+      document.getElementById('spmTime').innerHTML=fmt(nowMs()-spmStart);
+    },50);
+  }else{
+    var elapsed=nowMs()-spmStart;
+    spmRunning=false;
+    clearInterval(spmTimer);
+    document.getElementById('spmTime').innerHTML=fmt(elapsed);
+    var spm=600000/elapsed;
+    document.getElementById('spmResult').innerHTML=spm.toFixed(1)+' SPM';
+    btn.innerHTML='START';
+    btn.className='btn green';
+  }
+}
+function resetSPM(){
+  spmRunning=false;
+  clearInterval(spmTimer);
+  document.getElementById('spmResult').innerHTML='-- SPM';
+  document.getElementById('spmTime').innerHTML='00:00.00';
+  document.getElementById('spmBtn').innerHTML='START';
+  document.getElementById('spmBtn').className='btn green';
+}
+
+// Chrono
+var cRunning=false,cStart=0,cStored=0,cTimer=null;
+function toggleChrono(){
+  var btn=document.getElementById('chronoBtn');
+  if(!cRunning){
+    cRunning=true;cStart=nowMs();
+    btn.innerHTML='STOP';btn.className='btn red';
+    cTimer=setInterval(function(){
+      document.getElementById('chronoTime').innerHTML=fmt(cStored+(nowMs()-cStart));
+    },50);
+  }else{
+    cStored+=nowMs()-cStart;cRunning=false;clearInterval(cTimer);
+    document.getElementById('chronoTime').innerHTML=fmt(cStored);
+    btn.innerHTML='RIPRENDI';btn.className='btn green';
+  }
+}
+function resetChrono(){
+  cRunning=false;cStored=0;clearInterval(cTimer);
+  document.getElementById('chronoTime').innerHTML='00:00.00';
+  document.getElementById('chronoBtn').innerHTML='START';
+  document.getElementById('chronoBtn').className='btn green';
+}
+
+// Multi
+var mRunning=false,mStart=0,mStored=0,mTimer=null,arrivals=[];
+function mElapsed(){ return mStored+(mRunning?(nowMs()-mStart):0); }
+function toggleMulti(){
+  var btn=document.getElementById('multiBtn');
+  var arr=document.getElementById('arrivoBtn');
+  if(!mRunning){
+    mRunning=true;mStart=nowMs();
+    btn.innerHTML='PAUSA';btn.className='btn orange';arr.disabled=false;
+    mTimer=setInterval(function(){document.getElementById('multiTime').innerHTML=fmt(mElapsed());},50);
+  }else{
+    mStored+=nowMs()-mStart;mRunning=false;clearInterval(mTimer);
+    document.getElementById('multiTime').innerHTML=fmt(mStored);
+    btn.innerHTML='RIPRENDI';btn.className='btn green';arr.disabled=true;
+  }
+}
+function addArrival(){
+  if(!mRunning)return;
+  arrivals.push(mElapsed());
+  drawArrivals();
+}
+function undoArrival(){if(arrivals.length>0)arrivals.pop();drawArrivals();}
+function drawArrivals(){
+  var el=document.getElementById('arrivalList');
+  var s='',i,gap;
+  for(i=0;i<arrivals.length;i++){
+    gap=i===0?'—':'+'+((arrivals[i]-arrivals[0])/1000).toFixed(2)+' s';
+    s+='<div class="row"><b>'+(i+1)+'°</b><b>'+fmt(arrivals[i])+'</b><span class="small">'+gap+'</span></div>';
+  }
+  el.innerHTML=s;
+}
+function resetMulti(){
+  mRunning=false;mStart=0;mStored=0;arrivals=[];clearInterval(mTimer);
+  document.getElementById('multiTime').innerHTML='00:00.00';
+  document.getElementById('multiBtn').innerHTML='START';
+  document.getElementById('multiBtn').className='btn green';
+  document.getElementById('arrivoBtn').disabled=true;
+  drawArrivals();
+}
+</script>
+</body>
+</html>
