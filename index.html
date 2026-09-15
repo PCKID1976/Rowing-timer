@@ -218,7 +218,7 @@ h1{font-size:26px;line-height:1;margin:0}
 <div id="spm" class="panel active">
 <div class="hero">
   <div class="hero-icon">⚡</div>
-  <div class="badge">10 palate</div>
+  <div class="badge">3 palate</div>
   <div class="display" id="spmResult">-- SPM</div>
   <div class="sub" id="spmTime">00:00.00</div>
 </div>
@@ -226,7 +226,7 @@ h1{font-size:26px;line-height:1;margin:0}
 <button id="spmBtn" class="btn green" onclick="toggleSPM()">START</button>
 <button class="btn gray" onclick="resetSPM()">RESET</button>
 </div>
-<div class="help">Premi START, conta tu 10 palate e premi STOP subito dopo la decima.</div>
+<div class="help">Premi START, conta tu 3 palate e premi STOP subito dopo la terza.</div>
 </div>
 
 <div id="chrono" class="panel">
@@ -337,7 +337,7 @@ function toggleSPM(){
     spmRunning=false;
     clearInterval(spmTimer);
     document.getElementById('spmTime').innerHTML=fmt(elapsed);
-    var spm=600000/elapsed;
+    var spm=180000/elapsed;
     document.getElementById('spmResult').innerHTML=spm.toFixed(1)+' SPM';
     btn.innerHTML='START';
     btn.className='btn green';
